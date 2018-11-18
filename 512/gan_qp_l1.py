@@ -240,14 +240,12 @@ if __name__ == '__main__':
     n_size = 9
     img_data = img_generator(imgs, 'gan', batch_size).__iter__()
     Z = np.random.randn(n_size**2, z_dim)
-    # logs = {'fid': [], 'best': 1000}
-    logs = json.load(open('logs.txt'))
-    g_train_model.load_weights('./g_train_model.weights')
+    logs = {'fid': [], 'best': 1000}
 
     print u'初始化FID评估器...'
     fid_evaluator = FID(img_generator(imgs, 'fid', batch_size), True)
 
-    for i in range(14501, total_iter):
+    for i in range(total_iter):
         for j in range(2):
             x_sample = img_data.next()
             z_sample = np.random.randn(len(x_sample), z_dim)
