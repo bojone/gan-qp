@@ -182,6 +182,7 @@ d_train_model = Model([x_in, z_in],
                       [x_real_score, x_fake_score])
 
 d_loss = x_real_score - x_fake_score
+d_loss = d_loss[:, 0]
 d_norm = 10 * K.mean(K.abs(x_real - x_fake), axis=[1, 2, 3])
 d_loss = K.mean(- d_loss + 0.5 * d_loss**2 / d_norm)
 
