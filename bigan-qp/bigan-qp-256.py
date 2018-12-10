@@ -5,7 +5,7 @@ import scipy as sp
 from scipy import misc
 import glob
 import imageio
-from keras.models import Model,clone_model
+from keras.models import Model
 from keras.layers import *
 from keras import backend as K
 from keras.optimizers import Adam
