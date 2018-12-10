@@ -248,6 +248,77 @@ def sample_ae(path, n=8):
     imageio.imwrite(path, figure)
 
 
+# 插值采样函数
+def sample_inter(path, n=8):
+    blank = 20
+    figure = np.zeros((img_dim * n, img_dim * (n+2) + blank * 2, 3)) + 1
+    for i in range(n):
+        x_sample_1 = [imread(np.random.choice(imgs))]
+        x_sample_2 = [imread(np.random.choice(imgs))]
+        figure[i * img_dim:(i + 1) * img_dim, :img_dim] = x_sample_1[0]
+        figure[i * img_dim:(i + 1) * img_dim, -img_dim:] = x_sample_2[0]
+        z_sample_1 = e_model.predict(np.array(x_sample_1))
+        z_sample_2 = e_model.predict(np.array(x_sample_2))
+        for j in range(n):
+            z_sample = (1 - j / (n-1.)) * z_sample_1 + j / (n-1.) * z_sample_2
+            x_sample = g_model.predict(z_sample)
+            digit = x_sample[0]
+            figure[i * img_dim: (i + 1) * img_dim,
+                   (j + 1) * img_dim + blank: (j + 2) * img_dim + blank] = digit
+    figure = (figure + 1) / 2 * 255
+    figure = np.round(figure, 0).astype(int)
+    imageio.imwrite(path, figure)
+
+
+"""
+class img_generator:
+    """图片迭代器，方便重复调用
+    """
+    def __init__(self, imgs, mode='gan', batch_size=64):
+        self.imgs = imgs
+        self.batch_size = batch_size
+        self.mode = mode
+        if len(imgs) % batch_size == 0:
+            self.steps = len(imgs) // batch_size
+        else:
+            self.steps = len(imgs) // batch_size + 1
+    def __len__(self):
+        return self.steps
+    def __iter__(self):
+        X = []
+        while True:
+            for i,f in enumerate(self.imgs):
+                X.append(imread(f, self.mode))
+                if len(X) == self.batch_size or i == len(self.imgs)-1:
+                    X = np.array(X)
+                    yield X
+                    X = []
+
+img_gen = img_generator(imgs, batch_size=64)
+img_z_samples = e_model.predict_generator(img_gen.__iter__(),
+                                          steps=len(img_gen),
+                                          verbose=True)
+
+img_z_samples_ = img_z_samples / (img_z_samples**2).sum(1, keepdims=True)**0.5
+
+
+# 相似采样函数
+def sample_sim(path, n=8, k=2):
+    figure = np.zeros((img_dim * (k+1), img_dim * n, 3))
+    for i in range(n):
+        idx = np.random.choice(len(imgs))
+        # idxs = np.dot(img_z_samples_, img_z_samples_[idx]).argsort()[-k-1:][::-1]
+        idxs = ((img_z_samples**2).sum(1) + (img_z_samples[idx]**2).sum() - 2 * np.dot(img_z_samples, img_z_samples[idx])).argsort()[:k+1]
+        for j in range(k+1):
+            digit = imread(imgs[idxs[j]])
+            figure[j * img_dim:(j + 1) * img_dim,
+                   i * img_dim:(i + 1) * img_dim] = digit
+    figure = (figure + 1) / 2 * 255
+    figure = np.round(figure, 0).astype(int)
+    imageio.imwrite(path, figure)
+
+"""
+
 if __name__ == '__main__':
 
     import json
