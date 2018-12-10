@@ -55,7 +55,7 @@ class img_generator:
             np.random.shuffle(self.imgs)
             for i,f in enumerate(self.imgs):
                 X.append(imread(f, self.mode))
-                if len(X) == batch_size or i == len(self.imgs)-1:
+                if len(X) == self.batch_size or i == len(self.imgs)-1:
                     X = np.array(X)
                     yield X
                     X = []
