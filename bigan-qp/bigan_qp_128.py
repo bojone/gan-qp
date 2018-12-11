@@ -250,8 +250,6 @@ def sample_ae(path, n=8):
 
 if __name__ == '__main__':
 
-    import json
-
     iters_per_sample = 100
     total_iter = 1000000
     n_size = 8
