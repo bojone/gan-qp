@@ -17,3 +17,5 @@ The test environment is
 ## 256px reconstruction samples (bigan-qp):
 <img src="https://raw.githubusercontent.com/bojone/gan-qp/master/bigan-qp/ae.jpg" width=640>
 
+## other platforms
+- pytorch version: https://github.com/rahulbhalley/gan-qp.pytorch
